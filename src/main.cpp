@@ -49,7 +49,6 @@ uint8_t t_idle_led_g = 0;
 uint8_t t_idle_led_b = 0;
 
 /* Game data */
-String player;
 String bomb_state;
 uint8_t bomb = BOMB_NOT_PLANTED;
 uint8_t bomb_now = BOMB_NOT_PLANTED;
@@ -109,7 +108,7 @@ void explosion_effect()
   /* 1st flash */
   for (uint8_t i = 0; i <= NUM_LEDS_TOTAL - 1; i++)
   {
-    leds[i] = CRGB(150, 150, 0);
+    leds[i] = CRGB(150, 150, 150);
   }
   FastLED.show();
 
@@ -129,7 +128,7 @@ void explosion_effect()
   {
     for (uint8_t i = 0; i <= NUM_LEDS_TOTAL - 1; i++)
     {
-      leds[i] = CRGB(BYTE_MAX-q, BYTE_MAX-q, 0);
+      leds[i] = CRGB(BYTE_MAX-q, BYTE_MAX-q, BYTE_MAX-q);
     }
     delay(4);
     FastLED.show();
@@ -345,6 +344,9 @@ void loop()
       case BOMB_NOT_PLANTED:
       case BOMB_EXPLODED:
       case BOMB_DEFUSED:
+        /* TODO: distinguish "bomb defused" and "bomb exploded" events.
+        For now, both events lead to the same explosion-like effect. */
+        
         /* Bomb has either exploded or it has been defused */
         if (last_s_ms != 0)
         {
