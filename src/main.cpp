@@ -241,9 +241,10 @@ void setup()
   WiFi.begin(ssid, password);
   while (WiFi.waitForConnectResult() != WL_CONNECTED)
   {
-    stprint("WiFi connection failed!");
+    Serial.println("WiFi connection failed!");
   }
-  stprint("WiFi connected. IP Address: ", WiFi.localIP());
+  Serial.print("WiFi connected. IP Address: ");
+  Serial.println(WiFi.localIP());
 
   /* Add URI/path for just testing web server connectivity */
   server.on(WEB_SERVER_TEST_URI, HTTP_GET, [](AsyncWebServerRequest *request)
@@ -390,7 +391,6 @@ void loop()
     FastLED.show();
 
     led_update_pending = false;
-    stprint("HP: R %d G %d R+G %d", led_r, led_g, led_r + led_g);
 
     /* Reset inactivity timer */
     inactivity_ms = millis();
