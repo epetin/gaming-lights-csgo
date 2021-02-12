@@ -25,7 +25,7 @@ If you're dreaming of a low-cost gaming room illumination which also shows some 
   - fastled/FastLED@^3.4.0
   - ottowinter/ESPAsyncWebServer-esphome@^1.2.7
   - bblanchon/ArduinoJson@^6.17.2
-- Set your WiFi SSID and password in [user_config.h](../gaming-lights-csgo/include/user_config.h)
+- Set your WiFi SSID and password in [user_config.h](include/user_config.h)
 - Connect ESP32 to the PC with micro-USB cable
 - Hit "PlatformIO: Upload" at the bottom of the VS Code window
 - Press and hold "BOOT" button next to the USB connector on ESP32 until you can see that the binary is being uploaded to the device
@@ -34,4 +34,4 @@ If you're dreaming of a low-cost gaming room illumination which also shows some 
 - Set this IP address in [gamestate_integration_esp32.cfg](csgo_cfg/gamestate_integration_esp32.cfg) and copy file to the CS:GO cfg directory (located at SteamLibrary\steamapps\common\Counter-Strike Global Offensive\csgo\cfg)
 
 ## What next?
-Tweak with the parameters in [user_config.h](../gaming-lights-csgo/include/user_config.h) and let me know if you have any cool improvement / development ideas on this project :)
+Tweak with the parameters in [user_config.h](include/user_config.h) and let me know if you have any cool improvement / development ideas on this project :)
