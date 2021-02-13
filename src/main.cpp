@@ -18,6 +18,8 @@
 #define BOMB_PLANTED 1
 #define BOMB_EXPLODED 2
 #define BOMB_DEFUSED 3
+#define BOMB_CT_TEAM_ELIMINATED 4
+#define BOMB_T_TEAM_ELIMINATED 5
 #define BYTE_MAX 255
 /* Two main colors in idle state lighting */
 #define COLOR_RG 0
@@ -31,6 +33,7 @@ AsyncWebServer server(ESP_WEB_SERVER_PORT);
 CRGB leds[NUM_LEDS_TOTAL];
 
 /* Timer variables for idle lighting and bomb counter */
+static unsigned long bomb_plant_ms = 0;
 static unsigned long last_s_ms = 0;
 static unsigned long now_ms = 0;
 static unsigned long inactivity_ms = 0;
@@ -50,6 +53,8 @@ uint8_t t_idle_led_b = 0;
 
 /* Game data */
 String bomb_state;
+String round_phase;
+String round_winteam;
 uint8_t bomb = BOMB_NOT_PLANTED;
 uint8_t bomb_now = BOMB_NOT_PLANTED;
 uint8_t hp = 100;
@@ -82,6 +87,7 @@ void stprint(const char* input...)
       case '%': Serial.print('%'); break;
       case 's': Serial.print(va_arg(args, char*)); break;
       case 'd': Serial.print(va_arg(args, int), DEC); break;
+      case 'l': Serial.print(va_arg(args, unsigned long int), DEC); break;
       case 'b': Serial.print("b"); Serial.print(va_arg(args, int), BIN); break;
       case 'o': Serial.print("0o"); Serial.print(va_arg(args, int), OCT); break;
       case 'x': Serial.print("0x"); Serial.print(va_arg(args, int), HEX); break;
@@ -112,7 +118,7 @@ void explosion_effect()
   }
   FastLED.show();
 
-  delay(50);
+  delay(40);
 
   /* 2nd flash */
   for (uint8_t i = 0; i <= NUM_LEDS_TOTAL - 1; i++)
@@ -121,7 +127,7 @@ void explosion_effect()
   }
   FastLED.show();
 
-  delay(30);
+  delay(20);
 
   /* Fade out explosion */
   for (uint8_t q = 0; q < BYTE_MAX; ++q)
@@ -135,7 +141,37 @@ void explosion_effect()
   }
 
   /* Small lights off period */
-  delay(600);
+  delay(1000);
+}
+
+/******************************************************************************
+ * Simple bomb defusal light effect on the LED strip
+ * ***************************************************************************/
+void defuse_effect()
+{
+  /* Blue victory */
+  for (uint8_t q = 0; q < BYTE_MAX; ++q)
+  {
+    for (uint8_t i = 0; i <= NUM_LEDS_TOTAL - 1; i++)
+    {
+      leds[i] = CRGB(0, 0, q);
+    }
+    delay(2);
+    FastLED.show();
+  }
+
+  for (uint8_t q = 0; q < BYTE_MAX; ++q)
+  {
+    for (uint8_t i = 0; i <= NUM_LEDS_TOTAL - 1; i++)
+    {
+      leds[i] = CRGB(0, 0, BYTE_MAX-q);
+    }
+    delay(7);
+    FastLED.show();
+  }
+
+  /* Small lights off period */
+  delay(1000);
 }
 
 /******************************************************************************
@@ -271,6 +307,31 @@ void setup()
       if (doc.containsKey("round"))
       {
         JsonObject round = doc["round"];
+
+        /* Check if the round has ended due to either team elimination */
+        if (round.containsKey("phase"))
+        {
+          round_phase = (const char*) round["phase"];
+          if (round_phase == "over")
+          {
+            round_winteam = (const char*) round["win_team"];
+            if (round_winteam == "T")
+            {
+              /* All CTs die after bomb planted */
+              if (last_s_ms != 0)
+              {
+                bomb_now = BOMB_CT_TEAM_ELIMINATED;
+              }
+            }
+            else if (round_winteam == "CT")
+            {
+              bomb_now = BOMB_T_TEAM_ELIMINATED;
+            }
+          }
+        }
+
+        /* Bomb state check
+        NOTE: round.bomb is not present if round.phase is "over" */
         if (round.containsKey("bomb"))
         {
           bomb_state = (const char*) round["bomb"];
@@ -292,8 +353,10 @@ void setup()
             stprint("Warning: round.bomb has unknown value %s", bomb_state);
             bomb_now = BOMB_NOT_PLANTED;
           }
+          stprint("Bomb state (0=NP 1=PLT 2=EXP 3=DEF): %d", bomb_now);
         }
       }
+      
       /* If anything has changed, update variables to trigger LED update */
       if (bomb != bomb_now || hp != hp_now || ap != ap_now)
       {
@@ -331,8 +394,14 @@ void loop()
     {
       last_s_ms = now_ms;
       bomb_elapsed_s++;
-      led_update_pending = true;
       stprint("Bomb elapsed %d s", bomb_elapsed_s);
+      if (bomb_elapsed_s > 40)
+      {
+        stprint("Warning: GSI data about bomb explosion not received in 40 s.");
+        bomb_now = BOMB_NOT_PLANTED;
+        bomb = bomb_now;
+      }
+      led_update_pending = true;
     }
   }
 
@@ -342,18 +411,6 @@ void loop()
     switch (bomb)
     {
       case BOMB_NOT_PLANTED:
-      case BOMB_EXPLODED:
-      case BOMB_DEFUSED:
-        /* TODO: distinguish "bomb defused" and "bomb exploded" events.
-        For now, both events lead to the same explosion-like effect. */
-        
-        /* Bomb has either exploded or it has been defused */
-        if (last_s_ms != 0)
-        {
-          last_s_ms = 0;
-          bomb_elapsed_s = 0;
-          explosion_effect();
-        }
         break;
 
       case BOMB_PLANTED:
@@ -361,6 +418,8 @@ void loop()
         if (last_s_ms == 0)
         {
           last_s_ms = millis();
+          bomb_plant_ms = last_s_ms;
+          stprint("Bomb planted at time %l", bomb_plant_ms);
         }
         /* Indicate bomb progress by lighting up as many leds as there are
         elapsed bomb seconds */
@@ -368,6 +427,52 @@ void loop()
         {
           leds[i] = CRGB(BYTE_MAX, 0, 0);
         }
+        break;
+
+      case BOMB_EXPLODED:
+        if (last_s_ms != 0)
+        {
+          unsigned long bomb_exploded_ms = millis();
+          stprint("Bomb exploded at time %l = %l ms after plant",
+                  bomb_exploded_ms, bomb_exploded_ms - bomb_plant_ms);
+          last_s_ms = 0;
+          bomb_elapsed_s = 0;
+          explosion_effect();
+        }
+        bomb_now = BOMB_NOT_PLANTED;
+        bomb = bomb_now;
+        break;
+
+      case BOMB_DEFUSED:
+        if (last_s_ms != 0)
+        {
+          unsigned long bomb_defused_ms = millis();
+          stprint("Bomb defused at time %l = %l ms after plant",
+                  bomb_defused_ms, bomb_defused_ms - bomb_plant_ms);
+          last_s_ms = 0;
+          bomb_elapsed_s = 0;
+          defuse_effect();
+        }
+        bomb_now = BOMB_NOT_PLANTED;
+        bomb = bomb_now;
+        break;
+
+      case BOMB_CT_TEAM_ELIMINATED:
+        stprint("The whole counter-terrorist team is dead!");
+        last_s_ms = 0;
+        bomb_elapsed_s = 0;
+        explosion_effect();
+        bomb_now = BOMB_NOT_PLANTED;
+        bomb = bomb_now;
+        break;
+
+      case BOMB_T_TEAM_ELIMINATED:
+        stprint("The whole terrorist team is dead!");
+        last_s_ms = 0;
+        bomb_elapsed_s = 0;
+        defuse_effect();
+        bomb_now = BOMB_NOT_PLANTED;
+        bomb = bomb_now;
         break;
     }
 
