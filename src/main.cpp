@@ -107,6 +107,17 @@ void notFound(AsyncWebServerRequest *request)
 }
 
 /******************************************************************************
+ * Clear state variables and counters when CS:GO round has ended.
+ * ***************************************************************************/
+void round_end()
+{
+  last_s_ms = 0;
+  bomb_elapsed_s = 0;
+  bomb_now = BOMB_NOT_PLANTED;
+  bomb = bomb_now;
+}
+
+/******************************************************************************
  * Simple explosion light effect on the LED strip
  * ***************************************************************************/
 void explosion_effect()
@@ -114,7 +125,7 @@ void explosion_effect()
   /* 1st flash */
   for (uint8_t i = 0; i <= NUM_LEDS_TOTAL - 1; i++)
   {
-    leds[i] = CRGB(150, 150, 150);
+    leds[i] = CRGB(BYTE_MAX, 128, 0);
   }
   FastLED.show();
 
@@ -134,7 +145,7 @@ void explosion_effect()
   {
     for (uint8_t i = 0; i <= NUM_LEDS_TOTAL - 1; i++)
     {
-      leds[i] = CRGB(BYTE_MAX-q, BYTE_MAX-q, BYTE_MAX-q);
+      leds[i] = CRGB(BYTE_MAX-q, max(128-q, 0), 0);
     }
     delay(4);
     FastLED.show();
@@ -317,11 +328,7 @@ void setup()
             round_winteam = (const char*) round["win_team"];
             if (round_winteam == "T")
             {
-              /* All CTs die after bomb planted */
-              if (last_s_ms != 0)
-              {
-                bomb_now = BOMB_CT_TEAM_ELIMINATED;
-              }
+              bomb_now = BOMB_CT_TEAM_ELIMINATED;
             }
             else if (round_winteam == "CT")
             {
@@ -395,12 +402,17 @@ void loop()
       last_s_ms = now_ms;
       bomb_elapsed_s++;
       stprint("Bomb elapsed %d s", bomb_elapsed_s);
+
+      /* Just in case game stopped while bomb planted */
       if (bomb_elapsed_s > 40)
       {
         stprint("Warning: GSI data about bomb explosion not received in 40 s.");
         bomb_now = BOMB_NOT_PLANTED;
         bomb = bomb_now;
+        bomb_elapsed_s = 0;
+        last_s_ms = 0;
       }
+
       led_update_pending = true;
     }
   }
@@ -414,6 +426,7 @@ void loop()
         break;
 
       case BOMB_PLANTED:
+      {
         /* If counter not running, start it */
         if (last_s_ms == 0)
         {
@@ -428,52 +441,43 @@ void loop()
           leds[i] = CRGB(BYTE_MAX, 0, 0);
         }
         break;
+      }
 
       case BOMB_EXPLODED:
-        if (last_s_ms != 0)
-        {
-          unsigned long bomb_exploded_ms = millis();
-          stprint("Bomb exploded at time %l = %l ms after plant",
-                  bomb_exploded_ms, bomb_exploded_ms - bomb_plant_ms);
-          last_s_ms = 0;
-          bomb_elapsed_s = 0;
-          explosion_effect();
-        }
-        bomb_now = BOMB_NOT_PLANTED;
-        bomb = bomb_now;
+      {
+        unsigned long bomb_exploded_ms = millis();
+        stprint("Bomb exploded at time %l = %l ms after plant",
+                bomb_exploded_ms, bomb_exploded_ms - bomb_plant_ms);
+        explosion_effect();
+        round_end();
         break;
+      }
 
       case BOMB_DEFUSED:
-        if (last_s_ms != 0)
-        {
-          unsigned long bomb_defused_ms = millis();
-          stprint("Bomb defused at time %l = %l ms after plant",
-                  bomb_defused_ms, bomb_defused_ms - bomb_plant_ms);
-          last_s_ms = 0;
-          bomb_elapsed_s = 0;
-          defuse_effect();
-        }
-        bomb_now = BOMB_NOT_PLANTED;
-        bomb = bomb_now;
+      {
+        unsigned long bomb_defused_ms = millis();
+        stprint("Bomb defused at time %l = %l ms after plant",
+                bomb_defused_ms, bomb_defused_ms - bomb_plant_ms);
+        defuse_effect();
+        round_end();
         break;
+      }
 
       case BOMB_CT_TEAM_ELIMINATED:
+      {
         stprint("The whole counter-terrorist team is dead!");
-        last_s_ms = 0;
-        bomb_elapsed_s = 0;
         explosion_effect();
-        bomb_now = BOMB_NOT_PLANTED;
-        bomb = bomb_now;
+        round_end();
         break;
+      }
 
       case BOMB_T_TEAM_ELIMINATED:
+      {
         stprint("The whole terrorist team is dead!");
-        last_s_ms = 0;
-        bomb_elapsed_s = 0;
         defuse_effect();
-        bomb_now = BOMB_NOT_PLANTED;
-        bomb = bomb_now;
+        round_end();
         break;
+      }
     }
 
     /* Equations, thanks to WolframAlpha:
@@ -507,7 +511,11 @@ void loop()
   /* Turn on inactivity lighting if needed */
   if (millis() > inactivity_ms + INACTIVITY_TIME_MS)
   {
-    idle_entered = true;
+    if (!idle_entered)
+    {
+      stprint("Idle entered.");
+      idle_entered = true;
+    }
   }
 
   /* Sweep inactivity lights */
