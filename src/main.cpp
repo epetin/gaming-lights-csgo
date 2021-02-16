@@ -125,11 +125,11 @@ void explosion_effect()
   /* 1st flash */
   for (uint8_t i = 0; i <= NUM_LEDS_TOTAL - 1; i++)
   {
-    leds[i] = CRGB(BYTE_MAX, 128, 0);
+    leds[i] = CRGB(BYTE_MAX, 180, 0);
   }
   FastLED.show();
 
-  delay(40);
+  delay(50);
 
   /* 2nd flash */
   for (uint8_t i = 0; i <= NUM_LEDS_TOTAL - 1; i++)
@@ -138,16 +138,16 @@ void explosion_effect()
   }
   FastLED.show();
 
-  delay(20);
+  delay(70);
 
   /* Fade out explosion */
-  for (uint8_t q = 0; q < BYTE_MAX; ++q)
+  for (uint16_t q = 0; q <= BYTE_MAX; q++)
   {
     for (uint8_t i = 0; i <= NUM_LEDS_TOTAL - 1; i++)
     {
-      leds[i] = CRGB(BYTE_MAX-q, max(128-q, 0), 0);
+      leds[i] = CRGB(BYTE_MAX - (uint8_t) q, max(180 - (uint8_t) q, 0), 0);
     }
-    delay(4);
+    delay(7);
     FastLED.show();
   }
 
@@ -161,21 +161,21 @@ void explosion_effect()
 void defuse_effect()
 {
   /* Blue victory */
-  for (uint8_t q = 0; q < BYTE_MAX; ++q)
+  for (uint16_t q = 0; q <= BYTE_MAX; q++)
   {
     for (uint8_t i = 0; i <= NUM_LEDS_TOTAL - 1; i++)
     {
-      leds[i] = CRGB(0, 0, q);
+      leds[i] = CRGB(0, 0, (uint8_t) q);
     }
     delay(2);
     FastLED.show();
   }
 
-  for (uint8_t q = 0; q < BYTE_MAX; ++q)
+  for (uint16_t q = 0; q <= BYTE_MAX; q++)
   {
     for (uint8_t i = 0; i <= NUM_LEDS_TOTAL - 1; i++)
     {
-      leds[i] = CRGB(0, 0, BYTE_MAX-q);
+      leds[i] = CRGB(0, 0, BYTE_MAX - (uint8_t) q);
     }
     delay(7);
     FastLED.show();
