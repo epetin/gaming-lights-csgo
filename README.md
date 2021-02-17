@@ -1,6 +1,13 @@
 # Gaming room illumination with CS:GO game state integration on NodeMCU ESP32 and WS2812B LED strip
 If you're dreaming of a low-cost (~20 €) gaming room illumination which also shows some effects while you're playing Counter-Strike: Global Offensive, this might be worth reading :)
 
+- [Features](##Features)
+- [Required hardware](##Required-hardware)
+- [Wiring](##Wiring)
+- [Setup using Visual Studio Code](##Setup-using-Visual-Studio-Code)
+- [Examples](##Examples)
+- [Then what?](##Then-what?)
+
 ## Features
 - Idle illumination takes place at startup and after CS:GO inactivity. Idle lighting slowly sweeps through random colors. Inactivity time (default 2 min) and speed of the color sweep are controlled by corresponding values in [user_config.h](include/user_config.h)
 - CS:GO: Health points are illustrated in the first 40 LEDs of the strip
@@ -50,18 +57,15 @@ If you're dreaming of a low-cost (~20 €) gaming room illumination which also s
   - You should see IP address of the ESP32 if it connected to your WiFi successfully
 - Set this IP address in [gamestate_integration_esp32.cfg](csgo_cfg/gamestate_integration_esp32.cfg) and copy file to the CS:GO cfg directory (located at SteamLibrary\steamapps\common\Counter-Strike Global Offensive\csgo\cfg)
 
-## Preview
+## Examples
 ### Explode that fountain
-<img src="gifs/explosion.gif" alt="Bomb explodes" width="800">
-<br /><br />
+<img src="https://media.giphy.com/media/JsjDP4ZI2wXkpwTVPW/giphy.gif" alt="Bomb explodes" width="800">
 
 ### Noob gets killed by a bot
-<img src="gifs/killed_by_bot.gif" alt="Noob killed by a bot" width="800">
-<br /><br />
+<img src="https://media.giphy.com/media/tucoSOPNcY89p5fbCA/giphy.gif" alt="Noob killed by a bot" width="800">
 
 ### Idle state with 200x speed
-<img src="gifs/idle_200x.gif" alt="Idle state with 200x speed" width="800">
-<br /><br />
+<img src="https://media.giphy.com/media/N3Ow6DPoOJcVOpAkC7/giphy.gif" alt="Idle state with 200x speed" width="800">
 
-## What next?
+## Then what?
 Tweak with the parameters in [user_config.h](include/user_config.h) and let me know if you have any cool improvement / development ideas on this project :)
