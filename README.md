@@ -2,14 +2,14 @@
 If you're dreaming of a low-cost (~20 €) gaming room illumination which also shows some effects while you're playing Counter-Strike: Global Offensive, this might be worth reading :)
 
 <!--ts-->
-* [Features](##Features)
-* [Required hardware](##Required-hardware)
-* [Wiring](##Wiring)
-* [Setup using Visual Studio Code](##Setup-using-Visual-Studio-Code)
-* [Examples](##Examples)
+* [Features](#Features)
+* [Required hardware](#Required-hardware)
+* [Wiring](#Wiring)
+* [Setup using Visual Studio Code](#Setup-using-Visual-Studio-Code)
+* [Examples](#Examples)
 <!--te-->
 
-## Features
+# Features
 - Idle illumination takes place at startup and after CS:GO inactivity. Idle lighting slowly sweeps through random colors. Inactivity time (default 2 min) and speed of the color sweep are controlled by corresponding values in [user_config.h](include/user_config.h)
 - CS:GO: Health points are illustrated in the first 40 LEDs of the strip
   - Adjustable linear color scale from green to red. 100 HP = green, 50 HP = yellow, 1 HP = red.
@@ -17,7 +17,7 @@ If you're dreaming of a low-cost (~20 €) gaming room illumination which also s
   - Linear brightness scale. 100 AP = blue full brightness, 50 AP = blue moderate brightness, etc.
 - CS:GO: When bomb planted, elapsed seconds are shown as a red progress bar on the first 40 LEDs: one LED equals one second
 
-## Required hardware
+# Required hardware
 - ESP32 (maybe ESP8266 would also work out of the box)
   - I happened to have "NodeMCU ESP32" development board with a Chinese price of 5 €
 - 1 m long 5-volt WS2812B led strip with 60 LEDs
@@ -33,7 +33,7 @@ If you're dreaming of a low-cost (~20 €) gaming room illumination which also s
 - A couple of jumper wires (male-to-female)
 - Micro-USB cable for programming the ESP32
 
-## Wiring
+# Wiring
 - ESP32 GND#1 to WS2812B GND
 - ESP32 5V to WS2812B 5V
 - ESP32 pin 15 to WS2812B DIN (middle)
@@ -41,7 +41,7 @@ If you're dreaming of a low-cost (~20 €) gaming room illumination which also s
 - Power source GND to WS2812B external power source GND
 - Power source 5V to WS2812B external power source 5V
 
-## Setup using [Visual Studio Code](https://code.visualstudio.com/)
+# Setup using [Visual Studio Code](https://code.visualstudio.com/)
 - Clone this repository (Ctrl+Shift+P, type "git:clone", https://github.com/epetin/gaming-lights-csgo.git)
 - Install PlatformIO IDE extension (Ctrl+Shift+X, search for platformio)
 - At PlatformIO Home select "Import Arduino Project"
@@ -58,15 +58,15 @@ If you're dreaming of a low-cost (~20 €) gaming room illumination which also s
   - You should see IP address of the ESP32 if it connected to your WiFi successfully
 - Set this IP address in [gamestate_integration_esp32.cfg](csgo_cfg/gamestate_integration_esp32.cfg) and copy file to the CS:GO cfg directory (located at SteamLibrary\steamapps\common\Counter-Strike Global Offensive\csgo\cfg)
 
-## Examples
-### Explode that fountain
-![Bomb explodes at Inferno B site](https://media.giphy.com/media/JsjDP4ZI2wXkpwTVPW/giphy.gif)
+# Examples
+## Explode that fountain
+![Bomb explodes at Inferno B site](https://media.giphy.com/media/aPhOIZ5pR3Lzv9fA5H/giphy.gif)
 
-### Noob gets killed by a bot
+## Noob gets killed by a bot
 ![That bot is just too tough](https://media.giphy.com/media/tucoSOPNcY89p5fbCA/giphy.gif)
 
-### Idle state with 200x speed
-![This is 200x slower by default :)](https://media.giphy.com/media/N3Ow6DPoOJcVOpAkC7/giphy.gif)
+## Idle state lighting with 200x speed (IDLE_LIGHT_STEP_MS = 10)
+![This is 200x slower by default :)](https://media.giphy.com/media/PDpuQGHvoiil1FHvmP/giphy.gif)
 
-## What next
+# What next
 Tweak with the parameters in [user_config.h](include/user_config.h) and let me know if you have any cool improvement / development ideas on this project :)
