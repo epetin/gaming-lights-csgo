@@ -11,14 +11,14 @@ If you're dreaming of a low-cost (~20 €) gaming room illumination which also s
 
 ## Required hardware
 - ESP32 (maybe ESP8266 would also work out of the box)
-  - I happened to have "NodeMCU ESP32" development board with a Chinese quality and Chinese price of 5 €
+  - I happened to have "NodeMCU ESP32" development board with a Chinese price of 5 €
 - 1 m long 5-volt WS2812B led strip with 60 LEDs
-  - from eBay for 7 €
+  - from an online marketplace for 7 €
   - Search for "WS2812B led strip 5V"
   - Also other LED strip lengths (= LED counts) will work, as long as [user_config.h](include/user_config.h) is updated
 - 5 V DC power source with at least (60 mA * \<total amount of leds\>) output current.
   - For example, with 60 LEDs this would be 3.6 A, which equals to required output power of P = UI = 5 V * 3.6 A = 18 W.
-  - From eBay for 3-4 €
+  - From an online marketplace for 3-4 €
   - Search for "5V 4A DC power supply"
 - Power plug jack for easy powering of the LED strip
   - Search for "2.1x5.5mm DC Power Plug Jack"
@@ -49,6 +49,19 @@ If you're dreaming of a low-cost (~20 €) gaming room illumination which also s
 - Open serial monitor, "PlatformIO: Serial Monitor") at the bottom of the VS Code window
   - You should see IP address of the ESP32 if it connected to your WiFi successfully
 - Set this IP address in [gamestate_integration_esp32.cfg](csgo_cfg/gamestate_integration_esp32.cfg) and copy file to the CS:GO cfg directory (located at SteamLibrary\steamapps\common\Counter-Strike Global Offensive\csgo\cfg)
+
+## Preview
+### Explode that fountain
+<img src="gifs/explosion.gif" alt="Bomb explodes" width="800">
+<br /><br />
+
+### Noob gets killed by a bot
+<img src="gifs/killed_by_bot.gif" alt="Noob killed by a bot" width="800">
+<br /><br />
+
+### Idle state with 200x speed
+<img src="gifs/idle_200x.gif" alt="Idle state with 200x speed" width="800">
+<br /><br />
 
 ## What next?
 Tweak with the parameters in [user_config.h](include/user_config.h) and let me know if you have any cool improvement / development ideas on this project :)
