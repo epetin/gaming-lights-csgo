@@ -60,13 +60,13 @@ If you're dreaming of a low-cost (~20 €) gaming room illumination which also s
 
 # Examples
 ## Explode that fountain
-![Bomb explodes at Inferno B site](https://media.giphy.com/media/aPhOIZ5pR3Lzv9fA5H/giphy.gif)
+![Bomb explodes at Inferno B site](gifs/explosion.gif)
 
 ## Noob gets killed by a bot
-![That bot is just too tough](https://media.giphy.com/media/tucoSOPNcY89p5fbCA/giphy.gif)
+![That bot is just too tough](gifs/killed_by_bot.gif)
 
 ## Idle state lighting with 200x speed (IDLE_LIGHT_STEP_MS = 10)
-![This is 200x slower by default :)](https://media.giphy.com/media/PDpuQGHvoiil1FHvmP/giphy.gif)
+![This is 200x slower by default :)](gifs/idle_200x.gif)
 
 # What next
 Tweak with the parameters in [user_config.h](include/user_config.h) and let me know if you have any cool improvement / development ideas on this project :)
