@@ -1,12 +1,13 @@
 # Gaming room illumination with CS:GO game state integration on NodeMCU ESP32 and WS2812B LED strip
 If you're dreaming of a low-cost (~20 €) gaming room illumination which also shows some effects while you're playing Counter-Strike: Global Offensive, this might be worth reading :)
 
-- [Features](##Features)
-- [Required hardware](##Required-hardware)
-- [Wiring](##Wiring)
-- [Setup using Visual Studio Code](##Setup-using-Visual-Studio-Code)
-- [Examples](##Examples)
-- [Then what?](##Then-what?)
+<!--ts-->
+* [Features](##Features)
+* [Required hardware](##Required-hardware)
+* [Wiring](##Wiring)
+* [Setup using Visual Studio Code](##Setup-using-Visual-Studio-Code)
+* [Examples](##Examples)
+<!--te-->
 
 ## Features
 - Idle illumination takes place at startup and after CS:GO inactivity. Idle lighting slowly sweeps through random colors. Inactivity time (default 2 min) and speed of the color sweep are controlled by corresponding values in [user_config.h](include/user_config.h)
@@ -59,13 +60,13 @@ If you're dreaming of a low-cost (~20 €) gaming room illumination which also s
 
 ## Examples
 ### Explode that fountain
-<img src="https://media.giphy.com/media/JsjDP4ZI2wXkpwTVPW/giphy.gif" alt="Bomb explodes" width="800">
+![Bomb explodes at Inferno B site](https://media.giphy.com/media/JsjDP4ZI2wXkpwTVPW/giphy.gif)
 
 ### Noob gets killed by a bot
-<img src="https://media.giphy.com/media/tucoSOPNcY89p5fbCA/giphy.gif" alt="Noob killed by a bot" width="800">
+![That bot is just too tough](https://media.giphy.com/media/tucoSOPNcY89p5fbCA/giphy.gif)
 
 ### Idle state with 200x speed
-<img src="https://media.giphy.com/media/N3Ow6DPoOJcVOpAkC7/giphy.gif" alt="Idle state with 200x speed" width="800">
+![This is 200x slower by default :)](https://media.giphy.com/media/N3Ow6DPoOJcVOpAkC7/giphy.gif)
 
-## Then what?
+## What next
 Tweak with the parameters in [user_config.h](include/user_config.h) and let me know if you have any cool improvement / development ideas on this project :)
